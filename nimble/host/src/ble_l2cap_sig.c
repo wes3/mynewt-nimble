@@ -417,6 +417,8 @@ ble_l2cap_sig_update_rsp_rx(uint16_t conn_handle,
     int cb_status;
     int rc;
 
+    BLE_HS_LOG(INFO, "RECEIVED L2CAP UPDATE\n");
+
     proc = ble_l2cap_sig_proc_extract(conn_handle,
                                       BLE_L2CAP_SIG_PROC_OP_UPDATE,
                                       hdr->identifier);
@@ -450,6 +452,7 @@ ble_l2cap_sig_update_rsp_rx(uint16_t conn_handle,
     }
 
 done:
+    BLE_HS_LOG(INFO, "RC=%d\n", rc);
     ble_l2cap_sig_update_call_cb(proc, cb_status);
     ble_l2cap_sig_proc_free(proc);
     return rc;
@@ -512,6 +515,7 @@ ble_l2cap_sig_update(uint16_t conn_handle,
     req->slave_latency = htole16(params->slave_latency);
     req->timeout_multiplier = htole16(params->timeout_multiplier);
 
+    BLE_HS_LOG(INFO, "TRANSMITTING L2CAP UPDATE\n");
     rc = ble_l2cap_sig_tx(conn_handle, txom);
 
 done:
