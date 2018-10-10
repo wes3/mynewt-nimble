@@ -85,6 +85,9 @@ ble_ll_hci_ev_rem_conn_parm_req(struct ble_ll_conn_sm *connsm,
     }
 }
 
+#include "console/console.h"
+extern void w_dbg_mic_failures(void);
+
 /**
  * Send a connection update event.
  *
@@ -108,6 +111,9 @@ ble_ll_hci_ev_conn_update(struct ble_ll_conn_sm *connsm, uint8_t status)
             put_le16(evbuf + 8, connsm->slave_latency);
             put_le16(evbuf + 10, connsm->supervision_tmo);
             ble_ll_hci_event_send(evbuf);
+        } else {
+            console_printf("***BAD***\n");
+            w_dbg_mic_failures();
         }
     }
 }

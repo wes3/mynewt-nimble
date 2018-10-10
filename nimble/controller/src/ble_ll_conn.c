@@ -4383,3 +4383,9 @@ ble_ll_conn_module_init(void)
     /* Call reset to finish reset of initialization */
     ble_ll_conn_module_reset();
 }
+
+void w_dbg_mic_failures(void)
+{
+    STATS_INC(ble_ll_conn_stats, mic_failures);
+}
+

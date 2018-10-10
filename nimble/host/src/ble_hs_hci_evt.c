@@ -28,6 +28,8 @@
 #include "ble_hs_priv.h"
 #include "ble_hs_dbg_priv.h"
 
+#include "console/console.h"
+
 _Static_assert(sizeof (struct hci_data_hdr) == BLE_HCI_DATA_HDR_SZ,
                "struct hci_data_hdr must be 4 bytes");
 
@@ -661,8 +663,12 @@ ble_hs_hci_evt_le_conn_upd_complete(uint8_t subevent, uint8_t *data, int len)
 {
     struct hci_le_conn_upd_complete evt;
 
+    int err_code;
+
     if (len < BLE_HCI_LE_CONN_UPD_LEN) {
-        return BLE_HS_ECONTROLLER;
+        //return BLE_HS_ECONTROLLER;
+        err_code = BLE_HS_ECONTROLLER;
+        goto err_upd_complete;
     }
 
     evt.subevent_code = data[0];
@@ -676,23 +682,38 @@ ble_hs_hci_evt_le_conn_upd_complete(uint8_t subevent, uint8_t *data, int len)
         if (evt.conn_itvl < BLE_HCI_CONN_ITVL_MIN ||
             evt.conn_itvl > BLE_HCI_CONN_ITVL_MAX) {
 
-            return BLE_HS_EBADDATA;
+            //return BLE_HS_EBADDATA;
+            err_code = BLE_HS_EBADDATA;
+            goto err_upd_complete;
         }
         if (evt.conn_latency < BLE_HCI_CONN_LATENCY_MIN ||
             evt.conn_latency > BLE_HCI_CONN_LATENCY_MAX) {
 
-            return BLE_HS_EBADDATA;
+            //return BLE_HS_EBADDATA;
+            err_code = BLE_HS_EBADDATA - 1;
+            goto err_upd_complete;
         }
         if (evt.supervision_timeout < BLE_HCI_CONN_SPVN_TIMEOUT_MIN ||
             evt.supervision_timeout > BLE_HCI_CONN_SPVN_TIMEOUT_MAX) {
 
-            return BLE_HS_EBADDATA;
+            //return BLE_HS_EBADDATA;
+            err_code = BLE_HS_EBADDATA - 2;
+            goto err_upd_complete;
         }
     }
+
+    console_printf("Conn upd complete success!\n");
 
     ble_gap_rx_update_complete(&evt);
 
     return 0;
+
+err_upd_complete:
+    console_printf("Conn upd complete err=%d\n", err_code);
+    if (err_code < BLE_HS_EBADDATA) {
+        err_code = BLE_HS_EBADDATA;
+    }
+    return err_code;
 }
 
 static int
