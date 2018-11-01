@@ -2361,6 +2361,9 @@ ble_ll_conn_next_event(struct ble_ll_conn_sm *connsm)
      */
     if (CONN_F_TERMINATE_STARTED(connsm)) {
         if ((int32_t)(connsm->terminate_timeout - connsm->anchor_point) <= 0) {
+            /* WWW */
+            STATS_INC(ble_ll_stats, aux_scan_req_tx);
+            /* WWW */
             return -1;
         }
     }
@@ -2378,6 +2381,9 @@ ble_ll_conn_next_event(struct ble_ll_conn_sm *connsm)
         cur_ww = ble_ll_conn_calc_window_widening(connsm);
         max_ww = (connsm->conn_itvl * (BLE_LL_CONN_ITVL_USECS/2)) - BLE_LL_IFS;
         if (cur_ww >= max_ww) {
+            /* WWW */
+            STATS_INC(ble_ll_stats, aux_scan_rsp_err);
+            /* WWW */
             return -1;
         }
         cur_ww += BLE_LL_JITTER_USECS;
@@ -2571,6 +2577,9 @@ ble_ll_conn_event_end(struct ble_npl_event *ev)
     if ((connsm->csmflags.cfbit.terminate_ind_txd) ||
         (connsm->csmflags.cfbit.terminate_ind_rxd)) {
         if (connsm->csmflags.cfbit.terminate_ind_txd) {
+            /* WWW */
+            STATS_INC(ble_ll_stats, aux_conn_req_tx);
+            /* WWW */
             ble_err = BLE_ERR_CONN_TERM_LOCAL;
         } else {
             /* Make sure the disconnect reason is valid! */
@@ -2611,6 +2620,9 @@ ble_ll_conn_event_end(struct ble_npl_event *ev)
 
     /* Move to next connection event */
     if (ble_ll_conn_next_event(connsm)) {
+        /* WWW */
+        STATS_INC(ble_ll_stats, aux_conn_rsp_tx);
+        /* WWW */
         ble_ll_conn_end(connsm, BLE_ERR_CONN_TERM_LOCAL);
         return;
     }
@@ -2630,6 +2642,9 @@ ble_ll_conn_event_end(struct ble_npl_event *ev)
     /* Schedule the next connection event */
     while (ble_ll_sched_conn_reschedule(connsm)) {
         if (ble_ll_conn_next_event(connsm)) {
+            /* WWW */
+            STATS_INC(ble_ll_stats, aux_conn_rsp_err);
+            /* WWW */
             ble_ll_conn_end(connsm, BLE_ERR_CONN_TERM_LOCAL);
             return;
         }
