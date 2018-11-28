@@ -1571,10 +1571,10 @@ ble_ll_ctrl_rx_reject_ind(struct ble_ll_conn_sm *connsm, uint8_t *dptr,
         break;
 #endif
     case BLE_LL_CTRL_PROC_DATA_LEN_UPD:
-	/* That should not happen according to Bluetooth 5.0 Vol6 Part B, 5.1.9
-	 * However we need this workaround as there are devices on the market
-	 * which do send LL_REJECT on LL_LENGTH_REQ when collision happens
-	 */
+    /* That should not happen according to Bluetooth 5.0 Vol6 Part B, 5.1.9
+     * However we need this workaround as there are devices on the market
+     * which do send LL_REJECT on LL_LENGTH_REQ when collision happens
+     */
         ble_ll_ctrl_proc_stop(connsm, BLE_LL_CTRL_PROC_DATA_LEN_UPD);
         break;
     default:
@@ -2154,6 +2154,10 @@ ble_ll_ctrl_chk_proc_start(struct ble_ll_conn_sm *connsm)
     }
 }
 
+/* WWW */
+void w_dbg_ll_ctrl_pdu_rxd(uint8_t opcode, uint8_t rsp_opcode);
+/* WWW */
+
 /**
  * Called when the Link Layer receives a LL control PDU.
  *
@@ -2229,6 +2233,9 @@ ble_ll_ctrl_rx_pdu(struct ble_ll_conn_sm *connsm, struct os_mbuf *om)
         (len != g_ble_ll_ctrl_pkt_lengths[opcode])) {
         rc = -1;
         rsp_opcode = BLE_LL_CTRL_UNKNOWN_RSP;
+        /* WWW */
+        w_dbg_ll_ctrl_pdu_rxd(opcode, rsp_opcode);
+        /* WWW */
         goto ll_ctrl_send_rsp;
     }
 
@@ -2242,6 +2249,9 @@ ble_ll_ctrl_rx_pdu(struct ble_ll_conn_sm *connsm, struct os_mbuf *om)
         break;
     case BLE_LL_CTRL_CONN_PARM_REQ:
     case BLE_LL_CTRL_CONN_PARM_RSP:
+        /* WWW */
+        w_dbg_ll_ctrl_pdu_rxd(opcode, 0xfe);
+        /* WWW */
         feature = BLE_LL_FEAT_CONN_PARM_REQ;
         break;
     case BLE_LL_CTRL_ENC_REQ:
@@ -2289,6 +2299,7 @@ ble_ll_ctrl_rx_pdu(struct ble_ll_conn_sm *connsm, struct os_mbuf *om)
     switch (opcode) {
     case BLE_LL_CTRL_CONN_UPDATE_IND:
         rsp_opcode = ble_ll_ctrl_rx_conn_update(connsm, dptr);
+        w_dbg_ll_ctrl_pdu_rxd(opcode, rsp_opcode);
         break;
     case BLE_LL_CTRL_CHANNEL_MAP_REQ:
         rsp_opcode = ble_ll_ctrl_rx_chanmap_req(connsm, dptr);
@@ -2422,6 +2433,9 @@ ble_ll_ctrl_rx_pdu(struct ble_ll_conn_sm *connsm, struct os_mbuf *om)
     /* Free mbuf or send response */
 ll_ctrl_send_rsp:
     if (rsp_opcode == BLE_ERR_MAX) {
+        /* WWW */
+        w_dbg_ll_ctrl_pdu_rxd(opcode, rsp_opcode);
+        /* WWW */
         os_mbuf_free_chain(om);
     } else {
         /*

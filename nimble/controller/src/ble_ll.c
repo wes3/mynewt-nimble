@@ -1412,12 +1412,36 @@ ble_ll_pdu_max_tx_octets_get(uint32_t usecs, int phy_mode)
 /* WWW */
 #include "console/console.h"
 struct os_event w_dbg_event;
+struct os_event w_dbg_ll_ctrl_ev;
 
 static void
 w_dbg_ev_cb(struct os_event *ev)
 {
     console_printf("***conn_update_event_sent. itvl=%u***\n",
                    (uint16_t)((uint32_t)ev->ev_arg));
+}
+
+static void
+w_dbg_ll_ctrl_ev_cb(struct os_event *ev)
+{
+    uint8_t opcode;
+    uint8_t rsp_opcode;
+    uint32_t temp;
+
+    temp = (uint32_t)ev->ev_arg;
+    opcode = temp & 0xff;
+    rsp_opcode = (temp >> 8) & 0xff;
+    console_printf("***ll_ctrl_pdu_rxd. op=%u rsp=%u***\n", opcode, rsp_opcode);
+}
+
+void w_dbg_ll_ctrl_pdu_rxd(uint8_t opcode, uint8_t rsp_opcode)
+{
+    uint32_t temp;
+
+    temp = rsp_opcode;
+    temp = (temp << 8) | opcode;
+    w_dbg_event.ev_arg = (void *)temp;
+    os_eventq_put(os_eventq_dflt_get(), &w_dbg_ll_ctrl_ev);
 }
 
 void w_dbg_conn_upd_event_sent(uint16_t itvl)
@@ -1606,5 +1630,7 @@ ble_ll_init(void)
     /* WWW */
     w_dbg_event.ev_cb  = w_dbg_ev_cb;
     w_dbg_event.ev_arg = NULL;
+    w_dbg_ll_ctrl_ev.ev_cb = w_dbg_ll_ctrl_ev_cb;
+    w_dbg_ll_ctrl_ev.ev_arg = NULL;
     /* WWW */
 }
