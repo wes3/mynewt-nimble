@@ -1473,7 +1473,7 @@ w_dbg_conn_updated_ev_cb(struct os_event *ev)
 void w_dbg_conn_updated(uint32_t host_ev_sent)
 {
     w_dbg_conn_updated_ev.ev_arg = (void *)((uint32_t)host_ev_sent);
-    os_eventq_put(os_eventq_dflt_get(), &w_dbg_conn_upd_sched_ev);
+    os_eventq_put(os_eventq_dflt_get(), &w_dbg_conn_updated_ev);
 }
 
 /* WWW */
