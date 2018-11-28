@@ -1440,7 +1440,7 @@ void w_dbg_ll_ctrl_pdu_rxd(uint8_t opcode, uint8_t rsp_opcode)
 
     temp = rsp_opcode;
     temp = (temp << 8) | opcode;
-    w_dbg_event.ev_arg = (void *)temp;
+    w_dbg_ll_ctrl_ev.ev_arg = (void *)temp;
     os_eventq_put(os_eventq_dflt_get(), &w_dbg_ll_ctrl_ev);
 }
 
