@@ -115,6 +115,9 @@ ble_ll_hci_ev_conn_update(struct ble_ll_conn_sm *connsm, uint8_t status)
             console_printf("***BAD***\n");
             w_dbg_mic_failures();
         }
+    } else {
+        console_printf("***BAD***\n");
+        w_dbg_mic_failures();
     }
 }
 
