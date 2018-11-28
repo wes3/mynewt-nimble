@@ -2171,6 +2171,11 @@ ble_ll_conn_end(struct ble_ll_conn_sm *connsm, uint8_t ble_err)
                        connsm->event_cntr, (uint32_t)ble_err);
 }
 
+
+/* WWW */
+extern void w_dbg_conn_updated(uint32_t host_ev_sent);
+/* WWW */
+
 /**
  * Called to move to the next connection event.
  *
@@ -2267,7 +2272,15 @@ ble_ll_conn_next_event(struct ble_ll_conn_sm *connsm)
             (connsm->slave_latency != upd->latency)         ||
             (connsm->supervision_tmo != upd->timeout)) {
             connsm->csmflags.cfbit.host_expects_upd_event = 1;
+            /* WWW */
+            w_dbg_conn_updated(1);
+            /* WWW */
         }
+        /* WWW */
+        else {
+            w_dbg_conn_updated(0);
+        }
+        /* WWW */
 
         connsm->supervision_tmo = upd->timeout;
         connsm->slave_latency = upd->latency;

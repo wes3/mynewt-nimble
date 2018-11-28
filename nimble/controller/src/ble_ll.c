@@ -1413,6 +1413,8 @@ ble_ll_pdu_max_tx_octets_get(uint32_t usecs, int phy_mode)
 #include "console/console.h"
 struct os_event w_dbg_event;
 struct os_event w_dbg_ll_ctrl_ev;
+struct os_event w_dbg_conn_upd_sched_ev;
+struct os_event w_dbg_conn_updated_ev;
 
 static void
 w_dbg_ev_cb(struct os_event *ev)
@@ -1449,6 +1451,31 @@ void w_dbg_conn_upd_event_sent(uint16_t itvl)
     w_dbg_event.ev_arg = (void *)((uint32_t)itvl);
     os_eventq_put(os_eventq_dflt_get(), &w_dbg_event);
 }
+
+static void
+w_dbg_conn_upd_sched_ev_cb(struct os_event *ev)
+{
+    console_printf("***conn_upd_sched***\n");
+}
+
+void w_dbg_conn_upd_sched(void)
+{
+    os_eventq_put(os_eventq_dflt_get(), &w_dbg_conn_upd_sched_ev);
+}
+
+static void
+w_dbg_conn_updated_ev_cb(struct os_event *ev)
+{
+    console_printf("***conn_updated. host_ev=%u***\n",
+                   (uint16_t)(uint32_t)ev->ev_arg);
+}
+
+void w_dbg_conn_updated(uint32_t host_ev_sent)
+{
+    w_dbg_conn_updated_ev.ev_arg = (void *)((uint32_t)host_ev_sent);
+    os_eventq_put(os_eventq_dflt_get(), &w_dbg_conn_upd_sched_ev);
+}
+
 /* WWW */
 
 /**
@@ -1632,5 +1659,9 @@ ble_ll_init(void)
     w_dbg_event.ev_arg = NULL;
     w_dbg_ll_ctrl_ev.ev_cb = w_dbg_ll_ctrl_ev_cb;
     w_dbg_ll_ctrl_ev.ev_arg = NULL;
+    w_dbg_conn_upd_sched_ev.ev_cb = w_dbg_conn_upd_sched_ev_cb;
+    w_dbg_conn_upd_sched_ev.ev_arg = NULL;
+    w_dbg_conn_updated_ev.ev_cb = w_dbg_conn_updated_ev_cb;
+    w_dbg_conn_updated_ev.ev_arg = NULL;
     /* WWW */
 }

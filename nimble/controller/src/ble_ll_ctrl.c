@@ -1584,6 +1584,10 @@ ble_ll_ctrl_rx_reject_ind(struct ble_ll_conn_sm *connsm, uint8_t *dptr,
     return rsp_opcode;
 }
 
+/* WWW */
+extern void w_dbg_conn_upd_sched(void);
+/* WWW */
+
 /**
  * Called when we receive a connection update event
  *
@@ -1623,6 +1627,9 @@ ble_ll_ctrl_rx_conn_update(struct ble_ll_conn_sm *connsm, uint8_t *dptr)
         ble_ll_conn_timeout(connsm, BLE_ERR_INSTANT_PASSED);
     } else {
         connsm->csmflags.cfbit.conn_update_sched = 1;
+        /* WWW */
+        w_dbg_conn_upd_sched();
+        /* WWW */
     }
 
     return rsp_opcode;
