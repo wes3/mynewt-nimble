@@ -1409,6 +1409,24 @@ ble_ll_pdu_max_tx_octets_get(uint32_t usecs, int phy_mode)
     return max(27, octets);
 }
 
+/* WWW */
+#include "console/console.h"
+struct os_event w_dbg_event;
+
+static void
+w_dbg_ev_cb(struct os_event *ev)
+{
+    console_printf("***conn_update_event_sent. itvl=%u***\n",
+                   (uint16_t)((uint32_t)ev->ev_arg));
+}
+
+void w_dbg_conn_upd_event_sent(uint16_t itvl)
+{
+    w_dbg_event.ev_arg = (void *)((uint32_t)itvl);
+    os_eventq_put(os_eventq_dflt_get(), &w_dbg_event);
+}
+/* WWW */
+
 /**
  * Initialize the Link Layer. Should be called only once
  *
@@ -1584,4 +1602,9 @@ ble_ll_init(void)
 #if MYNEWT_VAL(BLE_LL_DIRECT_TEST_MODE)
     ble_ll_dtm_init();
 #endif
+
+    /* WWW */
+    w_dbg_event.ev_cb  = w_dbg_ev_cb;
+    w_dbg_event.ev_arg = NULL;
+    /* WWW */
 }
