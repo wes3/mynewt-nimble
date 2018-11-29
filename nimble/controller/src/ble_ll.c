@@ -1455,11 +1455,16 @@ void w_dbg_conn_upd_event_sent(uint16_t itvl)
 static void
 w_dbg_conn_upd_sched_ev_cb(struct os_event *ev)
 {
-    console_printf("***conn_upd_sched***\n");
+    console_printf("***conn_upd_sched. cntrs=%lx***\n", (uint32_t)ev->ev_arg);
 }
 
-void w_dbg_conn_upd_sched(void)
+void w_dbg_conn_upd_sched(uint16_t conn_event_cntr, uint16_t instant)
 {
+    uint32_t temp;
+
+    temp = conn_event_cntr;
+    temp = (temp << 16) | instant;
+    w_dbg_conn_upd_sched_ev.ev_arg = (void *)temp;
     os_eventq_put(os_eventq_dflt_get(), &w_dbg_conn_upd_sched_ev);
 }
 

@@ -1585,7 +1585,7 @@ ble_ll_ctrl_rx_reject_ind(struct ble_ll_conn_sm *connsm, uint8_t *dptr,
 }
 
 /* WWW */
-extern void w_dbg_conn_upd_sched(void);
+extern void w_dbg_conn_upd_sched(uint16_t conn_event_cntr, uint16_t instant);
 /* WWW */
 
 /**
@@ -1628,7 +1628,7 @@ ble_ll_ctrl_rx_conn_update(struct ble_ll_conn_sm *connsm, uint8_t *dptr)
     } else {
         connsm->csmflags.cfbit.conn_update_sched = 1;
         /* WWW */
-        w_dbg_conn_upd_sched();
+        w_dbg_conn_upd_sched(connsm->event_cntr,reqdata->instant);
         /* WWW */
     }
 
