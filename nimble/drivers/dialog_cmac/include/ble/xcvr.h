@@ -24,7 +24,7 @@
 extern "C" {
 #endif
 
-#define XCVR_TX_SCHED_DELAY_USECS       (250)
+#define XCVR_TX_SCHED_DELAY_USECS       (300)
 
 /*
  * Define HW whitelist size. This is the total possible whitelist size;
